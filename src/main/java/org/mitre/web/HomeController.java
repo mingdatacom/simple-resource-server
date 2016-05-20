@@ -22,9 +22,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.mitre.oauth2.introspectingfilter.IntrospectingTokenService;
-import org.mitre.openid.connect.client.OIDCAuthenticationFilter;
-import org.mitre.openid.connect.client.SubjectIssuerGrantedAuthority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,16 +32,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Handles requests for the application home page.
  */
-@Controller
+@RestController
 public class HomeController {
 
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
-	@Autowired
-	IntrospectingTokenService tokenService;
 	
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -53,19 +49,17 @@ public class HomeController {
 	public String home(Locale locale, Model model, Principal p) {
 
 		// Check access token
-		
+		logger.debug("Inside home client's access token has profile scope");
 		return "home";
 	}
 
-	@RequestMapping(value = "/user", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_USER')")
-	public String user(Principal p) {
+	@RequestMapping(value = "/email", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public String email(Principal p) {
 		return "user";
 	}
 
-	@RequestMapping(value = "/admin", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public String admin(Model model, Principal p) {
+	@RequestMapping(value = "/patient", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public String patient(Model model, Principal p) {
 		return "admin";
 	}
 
