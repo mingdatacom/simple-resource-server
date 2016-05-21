@@ -33,13 +33,28 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-	<context:component-scan base-package="org.mitre" />
+	<context:component-scan base-package="org.mitre.web" />
 
-	<security:http pattern="/**">
-
-		<security:logout />
-
-	</security:http>
+	<!-- HTTP security configurations -->      
+	<security:global-method-security pre-post-annotations="enabled">
+		<security:expression-handler ref="oauthExpressionHandler" />
+	</security:global-method-security>
+	<oauth:expression-handler id="oauthExpressionHandler" />
+	<oauth:web-expression-handler id="oauthWebExpressionHandler" />
+	<security:http auto-config="false" request-matcher="regex" use-expressions="true"
+	    disable-url-rewriting="true" entry-point-ref="oauthAuthenticationEntryPoint"
+	    pattern="/**">
+	    <security:custom-filter before="PRE_AUTH_FILTER" ref="resourceServerFilter" />
+	    <security:intercept-url pattern="/**" access="#oauth2.hasScope('profile')"/>
+	    <security:intercept-url pattern="/email/.*" access="#oauth2.hasScope('email')"/>
+	    <security:intercept-url pattern="/patient/.*" access="#oauth2.hasScope('patient')"/>
+	    <security:logout />
+	    <security:expression-handler ref="oauthWebExpressionHandler" />
+	</security:http>  
+	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+	    <property name="realmName" value="theRealm" />
+	</bean> 
+	<security:authentication-manager alias="authenticationManager" /> 
 		
 	<!-- Introspection Services -->
 	<oauth:resource-server id="resourceServerFilter" token-services-ref="introspectingService" />
@@ -53,8 +68,8 @@
 	   <property name="introspectionUrl" value="http://localhost:8080/openid-connect-server-webapp/introspect" />
 	   <property name="clientConfiguration">
 	     <bean class="org.mitre.oauth2.model.RegisteredClient">
-	       <property name="clientId" value="87928b55-99c2-4be3-a6d1-70586ed5120e"/>
-	       <property name="clientSecret" value="TkhbnOmPNYnz_EeFJAG8PJdQ0p6NAdv3_Zzm75ZQJcA-IoO4z9JNFzXPThj0dVZr66p9eh4xtK3cB4xnnFe6oA"/>
+	       <property name="clientId" value="4c7b8561-e011-4581-a74d-8603c32f8916"/>
+	       <property name="clientSecret" value="FF52r1eOPd4DDcby1cUYGBGNvIvDbr2cboKbjN0b88acS1hG5rN3PMBHySnYzO1ioqeKf3_sWjgADd7Kf6Nggw"/>
 	     </bean>
 	   </property>
 	</bean>
